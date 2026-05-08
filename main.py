@@ -5,26 +5,36 @@ from src.solvers.cross_solver import (
     is_white_cross_solved,
     print_white_cross_status,
 )
+from src.solvers.f2l_solver import (
+    print_f2l_status,
+    is_f2l_solved,
+)
 
 
-def run_single_cross_test(test_number, scramble_length=8):
-    """
-    Run one random bottom white cross test.
-
-    Returns:
-        A dictionary containing:
-            - test number
-            - scramble
-            - solved result
-            - moves used by solver
-    """
+def main():
     cube = RubiksCube()
 
-    scramble = generate_scramble(length=scramble_length)
+    print("Rubik's Cube F2L Detection Demo")
+    print("===============================")
+    print()
 
-    print("=" * 70)
-    print(f"Cross Test #{test_number}")
-    print("=" * 70)
+    print("Initial solved cube:")
+    print("--------------------")
+    cube.display()
+
+    print()
+    print("F2L status on solved cube:")
+    print("--------------------------")
+    print_f2l_status(cube)
+
+    print("Is F2L solved on initial cube?")
+    print(is_f2l_solved(cube))
+
+    print()
+    print("Generating random scramble...")
+    print("-----------------------------")
+
+    scramble = generate_scramble(length=20)
 
     print("Scramble:")
     print(" ".join(scramble))
@@ -32,89 +42,40 @@ def run_single_cross_test(test_number, scramble_length=8):
     cube.apply_algorithm(scramble)
 
     print()
-    print("White cross status before solving:")
+    print("Cube after scramble:")
+    print("--------------------")
+    cube.display()
+
+    print()
+    print("White cross status after scramble:")
     print("----------------------------------")
     print_white_cross_status(cube)
 
     print()
-    print("Running bottom white cross solver...")
-    print("------------------------------------")
+    print("Solving bottom white cross first...")
+    print("-----------------------------------")
 
-    moves = solve_cross(cube)
-
-    solved = is_white_cross_solved(cube)
+    cross_moves = solve_cross(cube)
 
     print()
-    print("Moves used:")
-    print(moves)
+    print("Cross moves:")
+    print(cross_moves)
 
     print()
-    print("White cross status after solving:")
-    print("---------------------------------")
+    print("White cross status after cross solver:")
+    print("--------------------------------------")
     print_white_cross_status(cube)
 
-    print("Solved?")
-    print(solved)
-
-    return {
-        "test_number": test_number,
-        "scramble": scramble,
-        "moves": moves,
-        "solved": solved,
-    }
-
-
-def main():
-    total_tests = 20
-    scramble_length = 8
-
-    passed = 0
-    failed = 0
-    failed_cases = []
-
-    print("Rubik's Cube Bottom White Cross Stress Test")
-    print("===========================================")
-    print()
-
-    for test_number in range(1, total_tests + 1):
-        result = run_single_cross_test(
-            test_number=test_number,
-            scramble_length=scramble_length,
-        )
-
-        if result["solved"]:
-            passed += 1
-        else:
-            failed += 1
-            failed_cases.append(result)
+    print("Is white cross solved?")
+    print(is_white_cross_solved(cube))
 
     print()
-    print("=" * 70)
-    print("Final Stress Test Result")
-    print("=" * 70)
-    print(f"Total tests: {total_tests}")
-    print(f"Passed:      {passed}")
-    print(f"Failed:      {failed}")
-    print(f"Success rate: {(passed / total_tests) * 100:.1f}%")
+    print("F2L status after cross solver:")
+    print("------------------------------")
+    print_f2l_status(cube)
 
-    if failed == 0:
-        print()
-        print("Great! Bottom white cross solver solved all random tests.")
-    else:
-        print()
-        print("Some tests failed. Failed scrambles are listed below.")
-        print()
-        print("=" * 70)
-        print("Failed Scrambles")
-        print("=" * 70)
-
-        for failed_case in failed_cases:
-            print(f"Test #{failed_case['test_number']}")
-            print("Scramble:")
-            print(" ".join(failed_case["scramble"]))
-            print("Moves used:")
-            print(failed_case["moves"])
-            print("-" * 70)
+    print("Is F2L solved?")
+    print(is_f2l_solved(cube))
 
 
 if __name__ == "__main__":
