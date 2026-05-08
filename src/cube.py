@@ -88,7 +88,13 @@ class RubiksCube:
 
         This affects:
         - The U face itself
-        - The top rows of F, R, B, L faces
+        - The top rows of F, L, B, R faces
+
+        With our face orientation:
+            F top -> L top
+            L top -> B top
+            B top -> R top
+            R top -> F top
         """
         self.rotate_face_clockwise("U")
 
@@ -97,10 +103,10 @@ class RubiksCube:
         back_top = self.faces["B"][0:3]
         left_top = self.faces["L"][0:3]
 
-        self.faces["R"][0:3] = front_top
-        self.faces["B"][0:3] = right_top
-        self.faces["L"][0:3] = back_top
-        self.faces["F"][0:3] = left_top
+        self.faces["L"][0:3] = front_top
+        self.faces["B"][0:3] = left_top
+        self.faces["R"][0:3] = back_top
+        self.faces["F"][0:3] = right_top
 
     
     def move_U_prime(self):
@@ -141,6 +147,12 @@ class RubiksCube:
         - The R face itself
         - The right column of U, F, D
         - The left column of B
+
+        With our face orientation:
+            F right -> U right
+            U right -> B left
+            B left  -> D right
+            D right -> F right
         """
         self.rotate_face_clockwise("R")
 
@@ -168,21 +180,21 @@ class RubiksCube:
             self.faces["B"][0],
         ]
 
-        self.faces["F"][2] = up_right[0]
-        self.faces["F"][5] = up_right[1]
-        self.faces["F"][8] = up_right[2]
+        self.faces["U"][2] = front_right[0]
+        self.faces["U"][5] = front_right[1]
+        self.faces["U"][8] = front_right[2]
 
-        self.faces["D"][2] = front_right[0]
-        self.faces["D"][5] = front_right[1]
-        self.faces["D"][8] = front_right[2]
+        self.faces["B"][6] = up_right[0]
+        self.faces["B"][3] = up_right[1]
+        self.faces["B"][0] = up_right[2]
 
-        self.faces["B"][6] = down_right[0]
-        self.faces["B"][3] = down_right[1]
-        self.faces["B"][0] = down_right[2]
+        self.faces["D"][2] = back_left[0]
+        self.faces["D"][5] = back_left[1]
+        self.faces["D"][8] = back_left[2]
 
-        self.faces["U"][2] = back_left[0]
-        self.faces["U"][5] = back_left[1]
-        self.faces["U"][8] = back_left[2]
+        self.faces["F"][2] = down_right[0]
+        self.faces["F"][5] = down_right[1]
+        self.faces["F"][8] = down_right[2]
 
     def move_R_prime(self):
         """
@@ -297,7 +309,13 @@ class RubiksCube:
 
         This affects:
         - The D face itself
-        - The bottom rows of F, L, B, R faces
+        - The bottom rows of F, R, B, L faces
+
+        With our face orientation:
+            F bottom -> R bottom
+            R bottom -> B bottom
+            B bottom -> L bottom
+            L bottom -> F bottom
         """
         self.rotate_face_clockwise("D")
 
@@ -306,11 +324,11 @@ class RubiksCube:
         back_bottom = self.faces["B"][6:9]
         left_bottom = self.faces["L"][6:9]
 
-        self.faces["L"][6:9] = front_bottom
-        self.faces["B"][6:9] = left_bottom
-        self.faces["R"][6:9] = back_bottom
-        self.faces["F"][6:9] = right_bottom
-
+        self.faces["R"][6:9] = front_bottom
+        self.faces["B"][6:9] = right_bottom
+        self.faces["L"][6:9] = back_bottom
+        self.faces["F"][6:9] = left_bottom
+        
     def move_D_prime(self):
         """
         Perform the D' move.
@@ -346,6 +364,12 @@ class RubiksCube:
         - The L face itself
         - The left column of U, F, D
         - The right column of B
+
+        With our face orientation:
+            U left  -> F left
+            F left  -> D left
+            D left  -> B right
+            B right -> U left
         """
         self.rotate_face_clockwise("L")
 
@@ -373,21 +397,21 @@ class RubiksCube:
             self.faces["B"][2],
         ]
 
-        self.faces["F"][0] = down_left[0]
-        self.faces["F"][3] = down_left[1]
-        self.faces["F"][6] = down_left[2]
+        self.faces["F"][0] = up_left[0]
+        self.faces["F"][3] = up_left[1]
+        self.faces["F"][6] = up_left[2]
 
-        self.faces["U"][0] = front_left[0]
-        self.faces["U"][3] = front_left[1]
-        self.faces["U"][6] = front_left[2]
+        self.faces["D"][0] = front_left[0]
+        self.faces["D"][3] = front_left[1]
+        self.faces["D"][6] = front_left[2]
 
-        self.faces["B"][8] = up_left[0]
-        self.faces["B"][5] = up_left[1]
-        self.faces["B"][2] = up_left[2]
+        self.faces["B"][8] = down_left[0]
+        self.faces["B"][5] = down_left[1]
+        self.faces["B"][2] = down_left[2]
 
-        self.faces["D"][0] = back_right[0]
-        self.faces["D"][3] = back_right[1]
-        self.faces["D"][6] = back_right[2]
+        self.faces["U"][0] = back_right[0]
+        self.faces["U"][3] = back_right[1]
+        self.faces["U"][6] = back_right[2]
 
     def move_L_prime(self):
         """
@@ -426,6 +450,12 @@ class RubiksCube:
         - The right column of R
         - The bottom row of D
         - The left column of L
+
+        With our face orientation:
+            R right -> U top
+            U top   -> L left
+            L left  -> D bottom
+            D bottom -> R right
         """
         self.rotate_face_clockwise("B")
 
@@ -453,21 +483,21 @@ class RubiksCube:
             self.faces["L"][6],
         ]
 
-        self.faces["R"][2] = up_top[2]
-        self.faces["R"][5] = up_top[1]
-        self.faces["R"][8] = up_top[0]
+        self.faces["U"][0] = right_right[0]
+        self.faces["U"][1] = right_right[1]
+        self.faces["U"][2] = right_right[2]
 
-        self.faces["D"][6] = right_right[0]
-        self.faces["D"][7] = right_right[1]
-        self.faces["D"][8] = right_right[2]
+        self.faces["L"][6] = up_top[0]
+        self.faces["L"][3] = up_top[1]
+        self.faces["L"][0] = up_top[2]
 
-        self.faces["L"][0] = down_bottom[2]
-        self.faces["L"][3] = down_bottom[1]
-        self.faces["L"][6] = down_bottom[0]
+        self.faces["D"][6] = left_left[0]
+        self.faces["D"][7] = left_left[1]
+        self.faces["D"][8] = left_left[2]
 
-        self.faces["U"][0] = left_left[0]
-        self.faces["U"][1] = left_left[1]
-        self.faces["U"][2] = left_left[2]
+        self.faces["R"][8] = down_bottom[0]
+        self.faces["R"][5] = down_bottom[1]
+        self.faces["R"][2] = down_bottom[2]
 
     def move_B_prime(self):
         """
