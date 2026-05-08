@@ -4,6 +4,7 @@ from src.solvers.f2l_solver import (
     find_all_f2l_pairs,
     get_f2l_status,
     get_f2l_pair_case,
+    normalize_green_red_pair,
     is_f2l_pair_solved,
     is_f2l_solved,
 )
@@ -136,3 +137,21 @@ def test_all_f2l_pair_cases_have_case_type():
             "corner_bottom_edge_bottom",
             "unknown",
         }
+
+
+def test_normalize_green_red_pair_keeps_white_cross_solved():
+    from src.scrambler import generate_scramble
+    from src.solvers.cross_solver import solve_cross, is_white_cross_solved
+
+    cube = RubiksCube()
+
+    scramble = generate_scramble(length=20)
+    cube.apply_algorithm(scramble)
+
+    solve_cross(cube)
+
+    assert is_white_cross_solved(cube) is True
+
+    normalize_green_red_pair(cube)
+
+    assert is_white_cross_solved(cube) is True

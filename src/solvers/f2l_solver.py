@@ -314,3 +314,132 @@ def is_f2l_solved(cube):
             return False
 
     return True
+
+GREEN_RED_CORNER_BOTTOM_EXTRACTION_MOVES = {
+    "DFR": ["R", "U", "R'"],
+    "DRB": ["R", "U", "R'"],
+    "DBL": ["L", "U", "L'"],
+    "DLF": ["L'", "U'", "L"],
+}
+
+GREEN_RED_EDGE_MIDDLE_EXTRACTION_MOVES = {
+    "FR": ["R", "U", "R'"],
+    "BR": ["R'", "U", "R"],
+    "BL": ["L", "U'", "L'"],
+    "FL": ["L'", "U'", "L"],
+}
+
+
+def prepare_green_red_pair(cube):
+    """
+    Normalize the Green-Red F2L pair.
+
+    Current goal:
+        Not to fully solve F2L yet.
+
+    Strategy:
+        1. If Green-Red pair is already solved, do nothing.
+        2. If Green-Red corner is in bottom layer, extract it to top.
+        3. If Green-Red edge is in middle layer, extract it to top.
+        4. If both corner and edge are in top layer, stop and report.
+
+    Later:
+        Once both pieces are in the top layer, we will add insertion logic.
+    """
+    pair_case = get_f2l_pair_case(cube, "Green-Red")
+
+    print("[F2L Solver] Preparing Green-Red pair...")
+    print(f"[F2L Solver] Case type: {pair_case['case_type']}")
+    print(f"[F2L Solver] Corner position: {pair_case['corner_position']}")
+    print(f"[F2L Solver] Corner stickers: {pair_case['corner_stickers']}")
+    print(f"[F2L Solver] Edge position: {pair_case['edge_position']}")
+    print(f"[F2L Solver] Edge stickers: {pair_case['edge_stickers']}")
+
+    if pair_case["solved"] is True:
+        print("[F2L Solver] Green-Red pair is already solved.")
+        return []
+
+    # 1) If the corner is in the bottom layer, extract it to top.
+    if (
+        pair_case["corner_in_bottom"] is True
+        and pair_case["corner_position"] in GREEN_RED_CORNER_BOTTOM_EXTRACTION_MOVES
+    ):
+        moves = GREEN_RED_CORNER_BOTTOM_EXTRACTION_MOVES[pair_case["corner_position"]]
+
+        print("[F2L Solver] Green-Red corner is in bottom layer.")
+        print("[F2L Solver] Extracting corner to top layer.")
+        print(f"[F2L Solver] Applying moves: {moves}")
+
+        cube.apply_algorithm(moves)
+
+        return moves
+
+    # 2) If the edge is in the middle layer, extract it to top.
+    if (
+        pair_case["edge_in_middle"] is True
+        and pair_case["edge_position"] in GREEN_RED_EDGE_MIDDLE_EXTRACTION_MOVES
+    ):
+        moves = GREEN_RED_EDGE_MIDDLE_EXTRACTION_MOVES[pair_case["edge_position"]]
+
+        print("[F2L Solver] Green-Red edge is in middle layer.")
+        print("[F2L Solver] Extracting edge to top layer.")
+        print(f"[F2L Solver] Applying moves: {moves}")
+
+        cube.apply_algorithm(moves)
+
+        return moves
+
+    # 3) If both are already in top layer, we are ready for insertion logic.
+    if (
+        pair_case["corner_in_top"] is True
+        and pair_case["edge_in_top"] is True
+    ):
+        print("[F2L Solver] Green-Red corner and edge are both in top layer.")
+        print("[F2L Solver] Insertion logic is not implemented yet.")
+        return []
+
+    print("[F2L Solver] No normalization algorithm implemented for this Green-Red case yet.")
+    return []
+
+
+def normalize_green_red_pair(cube, max_attempts=4):
+    """
+    Normalize the Green-Red F2L pair.
+
+    Goal:
+        Move the Green-Red corner and edge into the top layer if possible.
+
+    This repeatedly calls prepare_green_red_pair().
+    Each call may extract either the corner or the edge.
+    """
+    full_moves = []
+
+    for attempt in range(max_attempts):
+        pair_case = get_f2l_pair_case(cube, "Green-Red")
+
+        print(f"[F2L Solver] Normalize attempt {attempt + 1}")
+        print(f"[F2L Solver] Current case type: {pair_case['case_type']}")
+        print(f"[F2L Solver] Corner position: {pair_case['corner_position']}")
+        print(f"[F2L Solver] Edge position: {pair_case['edge_position']}")
+
+        if pair_case["solved"] is True:
+            print("[F2L Solver] Green-Red pair is already solved.")
+            return full_moves
+
+        if (
+            pair_case["corner_in_top"] is True
+            and pair_case["edge_in_top"] is True
+        ):
+            print("[F2L Solver] Green-Red pair is normalized: both pieces are in top layer.")
+            return full_moves
+
+        moves = prepare_green_red_pair(cube)
+
+        if moves == []:
+            print("[F2L Solver] No more normalization progress.")
+            return full_moves
+
+        full_moves.extend(moves)
+
+    print("[F2L Solver] Max normalization attempts reached.")
+    return full_moves
