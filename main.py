@@ -12,8 +12,11 @@ def run_single_cross_test(test_number, scramble_length=8):
     Run one random bottom white cross test.
 
     Returns:
-        True if the bottom white cross is solved.
-        False otherwise.
+        A dictionary containing:
+            - test number
+            - scramble
+            - solved result
+            - moves used by solver
     """
     cube = RubiksCube()
 
@@ -53,7 +56,12 @@ def run_single_cross_test(test_number, scramble_length=8):
     print("Solved?")
     print(solved)
 
-    return solved
+    return {
+        "test_number": test_number,
+        "scramble": scramble,
+        "moves": moves,
+        "solved": solved,
+    }
 
 
 def main():
@@ -62,21 +70,23 @@ def main():
 
     passed = 0
     failed = 0
+    failed_cases = []
 
     print("Rubik's Cube Bottom White Cross Stress Test")
     print("===========================================")
     print()
 
     for test_number in range(1, total_tests + 1):
-        solved = run_single_cross_test(
+        result = run_single_cross_test(
             test_number=test_number,
             scramble_length=scramble_length,
         )
 
-        if solved:
+        if result["solved"]:
             passed += 1
         else:
             failed += 1
+            failed_cases.append(result)
 
     print()
     print("=" * 70)
@@ -92,7 +102,19 @@ def main():
         print("Great! Bottom white cross solver solved all random tests.")
     else:
         print()
-        print("Some tests failed. We will use those failed cases to improve the solver.")
+        print("Some tests failed. Failed scrambles are listed below.")
+        print()
+        print("=" * 70)
+        print("Failed Scrambles")
+        print("=" * 70)
+
+        for failed_case in failed_cases:
+            print(f"Test #{failed_case['test_number']}")
+            print("Scramble:")
+            print(" ".join(failed_case["scramble"]))
+            print("Moves used:")
+            print(failed_case["moves"])
+            print("-" * 70)
 
 
 if __name__ == "__main__":

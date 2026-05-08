@@ -919,20 +919,21 @@ def print_white_cross_status(cube):
         print()
 
 
-def solve_cross(cube):
+def solve_cross(cube, max_rounds=4):
     """
-    Try to solve the full bottom white cross.
+    Try to solve the full bottom white cross using multiple passes.
 
-    Current strategy:
-        1. Solve White-Green edge to DF
-        2. Solve White-Red edge to DR
-        3. Solve White-Blue edge to DB
-        4. Solve White-Orange edge to DL
+    Why multiple passes?
+        Sometimes solving a later edge can disturb an earlier solved edge.
+        For example, fixing White-Orange may disturb White-Green.
+        So instead of running the four edge solvers only once, we run them
+        in repeated rounds until the full bottom cross is solved.
 
-    Important:
-        This is the first bottom-cross pipeline version.
-        Individual edge solvers are tested, but the full sequence
-        may still fail on some scrambles until protected strategy is improved.
+    Order:
+        1. White-Green  -> DF
+        2. White-Red    -> DR
+        3. White-Blue   -> DB
+        4. White-Orange -> DL
     """
     full_moves = []
 
@@ -942,33 +943,63 @@ def solve_cross(cube):
     print("[Bottom Cross Solver] Initial white cross status:")
     print_white_cross_status(cube)
 
-    print("[Bottom Cross Solver] Step 1: Solving White-Green edge to DF...")
-    green_moves = solve_bottom_white_green_edge(cube)
-    full_moves.extend(green_moves)
+    for round_number in range(1, max_rounds + 1):
+        print()
+        print("=" * 60)
+        print(f"[Bottom Cross Solver] Round {round_number}")
+        print("=" * 60)
 
-    print()
-    print("[Bottom Cross Solver] Status after White-Green:")
-    print_white_cross_status(cube)
+        if is_white_cross_solved(cube):
+            print("[Bottom Cross Solver] Bottom white cross is already solved.")
+            break
 
-    print("[Bottom Cross Solver] Step 2: Solving White-Red edge to DR...")
-    red_moves = solve_bottom_white_red_edge(cube)
-    full_moves.extend(red_moves)
+        print("[Bottom Cross Solver] Step 1: Solving White-Green edge to DF...")
+        green_moves = solve_bottom_white_green_edge(cube)
+        full_moves.extend(green_moves)
 
-    print()
-    print("[Bottom Cross Solver] Status after White-Red:")
-    print_white_cross_status(cube)
+        print()
+        print("[Bottom Cross Solver] Status after White-Green:")
+        print_white_cross_status(cube)
 
-    print("[Bottom Cross Solver] Step 3: Solving White-Blue edge to DB...")
-    blue_moves = solve_bottom_white_blue_edge(cube)
-    full_moves.extend(blue_moves)
+        if is_white_cross_solved(cube):
+            print("[Bottom Cross Solver] Bottom white cross solved successfully.")
+            break
 
-    print()
-    print("[Bottom Cross Solver] Status after White-Blue:")
-    print_white_cross_status(cube)
+        print("[Bottom Cross Solver] Step 2: Solving White-Red edge to DR...")
+        red_moves = solve_bottom_white_red_edge(cube)
+        full_moves.extend(red_moves)
 
-    print("[Bottom Cross Solver] Step 4: Solving White-Orange edge to DL...")
-    orange_moves = solve_bottom_white_orange_edge(cube)
-    full_moves.extend(orange_moves)
+        print()
+        print("[Bottom Cross Solver] Status after White-Red:")
+        print_white_cross_status(cube)
+
+        if is_white_cross_solved(cube):
+            print("[Bottom Cross Solver] Bottom white cross solved successfully.")
+            break
+
+        print("[Bottom Cross Solver] Step 3: Solving White-Blue edge to DB...")
+        blue_moves = solve_bottom_white_blue_edge(cube)
+        full_moves.extend(blue_moves)
+
+        print()
+        print("[Bottom Cross Solver] Status after White-Blue:")
+        print_white_cross_status(cube)
+
+        if is_white_cross_solved(cube):
+            print("[Bottom Cross Solver] Bottom white cross solved successfully.")
+            break
+
+        print("[Bottom Cross Solver] Step 4: Solving White-Orange edge to DL...")
+        orange_moves = solve_bottom_white_orange_edge(cube)
+        full_moves.extend(orange_moves)
+
+        print()
+        print("[Bottom Cross Solver] Status after White-Orange:")
+        print_white_cross_status(cube)
+
+        if is_white_cross_solved(cube):
+            print("[Bottom Cross Solver] Bottom white cross solved successfully.")
+            break
 
     print()
     print("[Bottom Cross Solver] Final white cross status:")
