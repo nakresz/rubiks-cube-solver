@@ -1,17 +1,17 @@
 from src.cube import RubiksCube
 from src.scrambler import generate_scramble
 from src.solvers.cross_solver import (
-    solve_white_green_edge,
+    solve_cross,
     print_white_cross_status,
-    is_white_green_edge_solved,
+    is_white_cross_solved,
 )
 
 
 def main():
     cube = RubiksCube()
 
-    print("Rubik's Cube CFOP Cross Demo")
-    print("============================")
+    print("Rubik's Cube Full Bottom White Cross Demo")
+    print("=========================================")
     print()
 
     print("Generating random scramble...")
@@ -30,35 +30,35 @@ def main():
     cube.display()
 
     print()
-    print("White cross status before solving White-Green edge:")
-    print("---------------------------------------------------")
+    print("Bottom white cross status before solving:")
+    print("-----------------------------------------")
     print_white_cross_status(cube)
 
-    print("Is White-Green edge solved?")
-    print(is_white_green_edge_solved(cube))
+    print("Is bottom white cross solved before?")
+    print(is_white_cross_solved(cube))
 
     print()
-    print("Trying to solve White-Green edge...")
-    print("-----------------------------------")
+    print("Trying to solve full bottom white cross...")
+    print("------------------------------------------")
 
-    moves = solve_white_green_edge(cube)
+    moves = solve_cross(cube)
 
     print()
-    print("Moves used:")
+    print("Moves used by bottom cross solver:")
     print(moves)
 
     print()
-    print("Cube after White-Green attempt:")
-    print("-------------------------------")
+    print("Cube after bottom cross attempt:")
+    print("--------------------------------")
     cube.display()
 
     print()
-    print("White cross status after solving White-Green edge:")
-    print("--------------------------------------------------")
+    print("Bottom white cross status after solving:")
+    print("----------------------------------------")
     print_white_cross_status(cube)
 
-    print("Is White-Green edge solved?")
-    print(is_white_green_edge_solved(cube))
+    print("Is bottom white cross solved after?")
+    print(is_white_cross_solved(cube))
 
 
 if __name__ == "__main__":
