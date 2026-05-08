@@ -219,6 +219,99 @@ WHITE_ORANGE_TO_UL_ALGORITHMS = {
     ("DB", ("O", "W")): ["B2", "U'", "L2"],
 }
 
+BOTTOM_CROSS_CONFIG = {
+    "White-Green": {
+        "top_target": "UF",
+        "bottom_target": "DF",
+        "insert_move": "F2",
+        "top_align_moves": {
+            "UF": [],
+            "UR": ["U"],
+            "UB": ["U2"],
+            "UL": ["U'"],
+        },
+    },
+    "White-Red": {
+        "top_target": "UR",
+        "bottom_target": "DR",
+        "insert_move": "R2",
+        "top_align_moves": {
+            "UR": [],
+            "UF": ["U'"],
+            "UB": ["U"],
+            "UL": ["U2"],
+        },
+    },
+    "White-Blue": {
+        "top_target": "UB",
+        "bottom_target": "DB",
+        "insert_move": "B2",
+        "top_align_moves": {
+            "UB": [],
+            "UF": ["U2"],
+            "UR": ["U'"],
+            "UL": ["U"],
+        },
+    },
+    "White-Orange": {
+        "top_target": "UL",
+        "bottom_target": "DL",
+        "insert_move": "L2",
+        "top_align_moves": {
+            "UL": [],
+            "UF": ["U"],
+            "UR": ["U2"],
+            "UB": ["U'"],
+        },
+    },
+}
+
+
+BOTTOM_TO_TOP_EXTRACTION_MOVES = {
+    "DF": ["F2"],
+    "DR": ["R2"],
+    "DB": ["B2"],
+    "DL": ["L2"],
+}
+
+
+TOP_EDGE_POSITIONS = {"UF", "UR", "UB", "UL"}
+BOTTOM_EDGE_POSITIONS = {"DF", "DR", "DB", "DL"}
+
+MIDDLE_TO_TOP_EXTRACTION_MOVES = {
+    "FR": ["R", "U", "R'"],
+    "FL": ["L'", "U'", "L"],
+    "BR": ["R'", "U", "R"],
+    "BL": ["L", "U'", "L'"],
+}
+
+FLIPPED_TOP_EDGE_FIX_MOVES = {
+    "White-Green": {
+        "UF": ["F", "U'", "R", "U"],
+        "UR": ["U", "F", "U'", "R", "U"],
+        "UB": ["U2", "F", "U'", "R", "U"],
+        "UL": ["U'", "F", "U'", "R", "U"],
+    },
+    "White-Red": {
+        "UR": ["R", "U", "B'", "U'"],
+        "UF": ["U'", "R", "U", "B'", "U'"],
+        "UB": ["U", "R", "U", "B'", "U'"],
+        "UL": ["U2", "R", "U", "B'", "U'"],
+    },
+    "White-Blue": {
+        "UB": ["B", "U", "L'", "U'"],
+        "UF": ["U2", "B", "U", "L'", "U'"],
+        "UR": ["U'", "B", "U", "L'", "U'"],
+        "UL": ["U", "B", "U", "L'", "U'"],
+    },
+    "White-Orange": {
+        "UL": ["L", "U'", "F", "U"],
+        "UF": ["U", "L", "U'", "F", "U"],
+        "UR": ["U2", "L", "U'", "F", "U"],
+        "UB": ["U'", "L", "U'", "F", "U"],
+    },
+}
+
 
 def find_white_cross_edges(cube):
     """
@@ -380,27 +473,9 @@ def get_bottom_white_green_edge_case(cube):
 
 def solve_bottom_white_green_edge(cube):
     """
-    Try to solve the White-Green edge into the bottom cross position DF.
+    Solve the White-Green edge into DF using protected bottom-cross strategy.
     """
-    edge_case = get_bottom_white_green_edge_case(cube)
-
-    if edge_case is None:
-        print("[Bottom Cross Solver] White-Green edge could not be found.")
-        return []
-
-    print(f"[Bottom Cross Solver] White-Green edge case: {edge_case}")
-
-    if edge_case not in WHITE_GREEN_TO_DF_ALGORITHMS:
-        print("[Bottom Cross Solver] No algorithm implemented for this White-Green bottom case yet.")
-        return []
-
-    moves = WHITE_GREEN_TO_DF_ALGORITHMS[edge_case]
-
-    print(f"[Bottom Cross Solver] Moves for White-Green edge: {moves}")
-
-    cube.apply_algorithm(moves)
-
-    return moves
+    return solve_bottom_cross_edge_with_retry(cube, "White-Green")
 
 def is_bottom_white_red_edge_solved(cube):
     """
@@ -433,27 +508,9 @@ def get_bottom_white_red_edge_case(cube):
 
 def solve_bottom_white_red_edge(cube):
     """
-    Try to solve the White-Red edge into the bottom cross position DR.
+    Solve the White-Red edge into DR using protected bottom-cross strategy.
     """
-    edge_case = get_bottom_white_red_edge_case(cube)
-
-    if edge_case is None:
-        print("[Bottom Cross Solver] White-Red edge could not be found.")
-        return []
-
-    print(f"[Bottom Cross Solver] White-Red edge case: {edge_case}")
-
-    if edge_case not in WHITE_RED_TO_DR_ALGORITHMS:
-        print("[Bottom Cross Solver] No algorithm implemented for this White-Red bottom case yet.")
-        return []
-
-    moves = WHITE_RED_TO_DR_ALGORITHMS[edge_case]
-
-    print(f"[Bottom Cross Solver] Moves for White-Red edge: {moves}")
-
-    cube.apply_algorithm(moves)
-
-    return moves
+    return solve_bottom_cross_edge_with_retry(cube, "White-Red")
 
 def is_bottom_white_blue_edge_solved(cube):
     """
@@ -486,27 +543,9 @@ def get_bottom_white_blue_edge_case(cube):
 
 def solve_bottom_white_blue_edge(cube):
     """
-    Try to solve the White-Blue edge into the bottom cross position DB.
+    Solve the White-Blue edge into DB using protected bottom-cross strategy.
     """
-    edge_case = get_bottom_white_blue_edge_case(cube)
-
-    if edge_case is None:
-        print("[Bottom Cross Solver] White-Blue edge could not be found.")
-        return []
-
-    print(f"[Bottom Cross Solver] White-Blue edge case: {edge_case}")
-
-    if edge_case not in WHITE_BLUE_TO_DB_ALGORITHMS:
-        print("[Bottom Cross Solver] No algorithm implemented for this White-Blue bottom case yet.")
-        return []
-
-    moves = WHITE_BLUE_TO_DB_ALGORITHMS[edge_case]
-
-    print(f"[Bottom Cross Solver] Moves for White-Blue edge: {moves}")
-
-    cube.apply_algorithm(moves)
-
-    return moves
+    return solve_bottom_cross_edge_with_retry(cube, "White-Blue")
 
 def is_bottom_white_orange_edge_solved(cube):
     """
@@ -539,27 +578,133 @@ def get_bottom_white_orange_edge_case(cube):
 
 def solve_bottom_white_orange_edge(cube):
     """
-    Try to solve the White-Orange edge into the bottom cross position DL.
+    Solve the White-Orange edge into DL using protected bottom-cross strategy.
     """
-    edge_case = get_bottom_white_orange_edge_case(cube)
+    return solve_bottom_cross_edge_with_retry(cube, "White-Orange")
 
-    if edge_case is None:
-        print("[Bottom Cross Solver] White-Orange edge could not be found.")
+def solve_bottom_cross_edge_protected(cube, edge_name):
+    """
+    Solve one white cross edge using a protected bottom-cross strategy.
+
+    Strategy:
+        1. If the edge is already solved, do nothing.
+        2. If the edge is flipped, try to fix or extract it.
+        3. If the edge is in the bottom layer but not solved, extract it to top.
+        4. If the edge is in the middle layer, extract it to top.
+        5. Align the edge above its correct center using U moves.
+        6. Insert it into the bottom layer using a 180-degree face turn.
+    """
+    status = get_white_cross_status(cube)
+    edge_status = status[edge_name]
+
+    current_position = edge_status["current_position"]
+    current_colors = edge_status["current_colors"]
+    target_colors = edge_status["target_colors"]
+
+    if edge_status["solved"] is True:
+        print(f"[Protected Bottom Cross] {edge_name} is already solved.")
         return []
 
-    print(f"[Bottom Cross Solver] White-Orange edge case: {edge_case}")
-
-    if edge_case not in WHITE_ORANGE_TO_DL_ALGORITHMS:
-        print("[Bottom Cross Solver] No algorithm implemented for this White-Orange bottom case yet.")
+    if current_position is None or current_colors is None:
+        print(f"[Protected Bottom Cross] {edge_name} could not be found.")
         return []
 
-    moves = WHITE_ORANGE_TO_DL_ALGORITHMS[edge_case]
+    config = BOTTOM_CROSS_CONFIG[edge_name]
+    full_moves = []
 
-    print(f"[Bottom Cross Solver] Moves for White-Orange edge: {moves}")
+    print(f"[Protected Bottom Cross] Solving {edge_name}")
+    print(f"[Protected Bottom Cross] Initial case: {(current_position, tuple(current_colors))}")
 
-    cube.apply_algorithm(moves)
+    # 1) Handle flipped orientation cases first
+    if tuple(current_colors) != tuple(target_colors):
+        if current_position in TOP_EDGE_POSITIONS:
+            flipped_moves = FLIPPED_TOP_EDGE_FIX_MOVES[edge_name][current_position]
 
-    return moves
+            print(f"[Protected Bottom Cross] Fixing flipped top edge with: {flipped_moves}")
+
+            cube.apply_algorithm(flipped_moves)
+            full_moves.extend(flipped_moves)
+
+            return full_moves
+
+        if current_position in BOTTOM_EDGE_POSITIONS:
+            extraction_moves = BOTTOM_TO_TOP_EXTRACTION_MOVES[current_position]
+
+            print(f"[Protected Bottom Cross] Extracting flipped bottom edge with: {extraction_moves}")
+
+            cube.apply_algorithm(extraction_moves)
+            full_moves.extend(extraction_moves)
+
+            return full_moves
+
+        if current_position in MIDDLE_TO_TOP_EXTRACTION_MOVES:
+            extraction_moves = MIDDLE_TO_TOP_EXTRACTION_MOVES[current_position]
+
+            print(f"[Protected Bottom Cross] Extracting flipped middle edge with: {extraction_moves}")
+
+            cube.apply_algorithm(extraction_moves)
+            full_moves.extend(extraction_moves)
+
+            return full_moves
+
+        print(f"[Protected Bottom Cross] Unknown flipped case for {edge_name}: {(current_position, tuple(current_colors))}")
+        return full_moves
+
+    # 2) Normal orientation: if the edge is in bottom but wrong slot, extract it
+    if current_position in BOTTOM_EDGE_POSITIONS:
+        if current_position == config["bottom_target"]:
+            return []
+
+        extraction_moves = BOTTOM_TO_TOP_EXTRACTION_MOVES[current_position]
+
+        print(f"[Protected Bottom Cross] Extracting from bottom with: {extraction_moves}")
+
+        cube.apply_algorithm(extraction_moves)
+        full_moves.extend(extraction_moves)
+
+        updated_status = get_white_cross_status(cube)[edge_name]
+        current_position = updated_status["current_position"]
+        current_colors = updated_status["current_colors"]
+
+        print(f"[Protected Bottom Cross] Case after extraction: {(current_position, tuple(current_colors))}")
+
+    # 3) Normal orientation: if the edge is in middle, extract it to top
+    if current_position not in TOP_EDGE_POSITIONS:
+        if current_position in MIDDLE_TO_TOP_EXTRACTION_MOVES:
+            extraction_moves = MIDDLE_TO_TOP_EXTRACTION_MOVES[current_position]
+
+            print(f"[Protected Bottom Cross] Extracting from middle with: {extraction_moves}")
+
+            cube.apply_algorithm(extraction_moves)
+            full_moves.extend(extraction_moves)
+
+            updated_status = get_white_cross_status(cube)[edge_name]
+            current_position = updated_status["current_position"]
+            current_colors = updated_status["current_colors"]
+
+            print(f"[Protected Bottom Cross] Case after middle extraction: {(current_position, tuple(current_colors))}")
+
+            if current_position not in TOP_EDGE_POSITIONS:
+                print(f"[Protected Bottom Cross] Edge is still not in top layer for {edge_name}.")
+                return full_moves
+        else:
+            print(f"[Protected Bottom Cross] Unknown non-top position for {edge_name}: {current_position}")
+            return full_moves
+
+    # 4) Normal orientation: align on U layer and insert with 180-degree face turn
+    align_moves = config["top_align_moves"][current_position]
+    insert_move = [config["insert_move"]]
+
+    print(f"[Protected Bottom Cross] Align moves: {align_moves}")
+    print(f"[Protected Bottom Cross] Insert move: {insert_move}")
+
+    cube.apply_algorithm(align_moves)
+    cube.apply_algorithm(insert_move)
+
+    full_moves.extend(align_moves)
+    full_moves.extend(insert_move)
+
+    return full_moves
 
 def is_white_red_edge_solved(cube):
     """
@@ -834,5 +979,35 @@ def solve_cross(cube):
     else:
         print("[Bottom Cross Solver] Bottom white cross is not fully solved yet.")
         print("[Bottom Cross Solver] More protected strategy is needed.")
+
+    return full_moves
+
+
+def solve_bottom_cross_edge_with_retry(cube, edge_name, max_attempts=3):
+    """
+    Try to solve one bottom cross edge with a small retry loop.
+
+    This is useful because after extracting a middle/bottom edge,
+    the edge may move into a new case that the protected solver can solve.
+    """
+    full_moves = []
+
+    for attempt in range(max_attempts):
+        status = get_white_cross_status(cube)
+        edge_status = status[edge_name]
+
+        if edge_status["solved"] is True:
+            print(f"[Protected Bottom Cross] {edge_name} solved after {attempt} attempt(s).")
+            return full_moves
+
+        print(f"[Protected Bottom Cross] Retry attempt {attempt + 1} for {edge_name}")
+
+        moves = solve_bottom_cross_edge_protected(cube, edge_name)
+
+        if moves == []:
+            print(f"[Protected Bottom Cross] No progress for {edge_name}.")
+            return full_moves
+
+        full_moves.extend(moves)
 
     return full_moves
