@@ -7,30 +7,18 @@ from src.solvers.cross_solver import (
 )
 from src.solvers.f2l_solver import (
     print_f2l_status,
-    is_f2l_solved,
+    print_f2l_pair_case,
+    get_f2l_pair_case,
 )
 
 
 def main():
     cube = RubiksCube()
 
-    print("Rubik's Cube F2L Detection Demo")
-    print("===============================")
+    print("Rubik's Cube F2L Case Detection Demo")
+    print("====================================")
     print()
 
-    print("Initial solved cube:")
-    print("--------------------")
-    cube.display()
-
-    print()
-    print("F2L status on solved cube:")
-    print("--------------------------")
-    print_f2l_status(cube)
-
-    print("Is F2L solved on initial cube?")
-    print(is_f2l_solved(cube))
-
-    print()
     print("Generating random scramble...")
     print("-----------------------------")
 
@@ -45,11 +33,6 @@ def main():
     print("Cube after scramble:")
     print("--------------------")
     cube.display()
-
-    print()
-    print("White cross status after scramble:")
-    print("----------------------------------")
-    print_white_cross_status(cube)
 
     print()
     print("Solving bottom white cross first...")
@@ -70,12 +53,19 @@ def main():
     print(is_white_cross_solved(cube))
 
     print()
-    print("F2L status after cross solver:")
-    print("------------------------------")
+    print("Full F2L status after cross solver:")
+    print("-----------------------------------")
     print_f2l_status(cube)
 
-    print("Is F2L solved?")
-    print(is_f2l_solved(cube))
+    print()
+    print("Green-Red F2L case:")
+    print("-------------------")
+    print_f2l_pair_case(cube, "Green-Red")
+
+    print()
+    print("Raw Green-Red case dictionary:")
+    print("------------------------------")
+    print(get_f2l_pair_case(cube, "Green-Red"))
 
 
 if __name__ == "__main__":

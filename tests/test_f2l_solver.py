@@ -3,10 +3,10 @@ from src.solvers.f2l_solver import (
     find_f2l_pair,
     find_all_f2l_pairs,
     get_f2l_status,
+    get_f2l_pair_case,
     is_f2l_pair_solved,
     is_f2l_solved,
 )
-
 
 def test_find_green_red_f2l_pair_on_initial_cube():
     cube = RubiksCube()
@@ -91,3 +91,48 @@ def test_individual_pairs_not_solved_on_initial_cube_for_bottom_white_orientatio
     assert is_f2l_pair_solved(cube, "Red-Blue") is False
     assert is_f2l_pair_solved(cube, "Blue-Orange") is False
     assert is_f2l_pair_solved(cube, "Orange-Green") is False
+
+def test_green_red_f2l_case_on_initial_cube():
+    cube = RubiksCube()
+
+    pair_case = get_f2l_pair_case(cube, "Green-Red")
+
+    assert pair_case["corner_position"] == "UFR"
+    assert pair_case["edge_position"] == "FR"
+
+    assert pair_case["corner_in_top"] is True
+    assert pair_case["corner_in_bottom"] is False
+
+    assert pair_case["edge_in_top"] is False
+    assert pair_case["edge_in_middle"] is True
+    assert pair_case["edge_in_bottom"] is False
+
+    assert pair_case["corner_in_target_slot"] is False
+    assert pair_case["edge_in_target_slot"] is True
+
+    assert pair_case["case_type"] == "corner_top_edge_middle"
+    assert pair_case["solved"] is False
+
+
+def test_all_f2l_pair_cases_have_case_type():
+    cube = RubiksCube()
+
+    for pair_name in [
+        "Green-Red",
+        "Red-Blue",
+        "Blue-Orange",
+        "Orange-Green",
+    ]:
+        pair_case = get_f2l_pair_case(cube, pair_name)
+
+        assert "case_type" in pair_case
+        assert pair_case["case_type"] in {
+            "solved",
+            "corner_top_edge_top",
+            "corner_top_edge_middle",
+            "corner_top_edge_bottom",
+            "corner_bottom_edge_top",
+            "corner_bottom_edge_middle",
+            "corner_bottom_edge_bottom",
+            "unknown",
+        }

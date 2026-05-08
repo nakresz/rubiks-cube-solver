@@ -47,6 +47,13 @@ F2L_PAIRS = {
     },
 }
 
+TOP_CORNER_POSITIONS = {"UFR", "URB", "UBL", "ULF"}
+BOTTOM_CORNER_POSITIONS = {"DFR", "DRB", "DBL", "DLF"}
+
+TOP_EDGE_POSITIONS = {"UF", "UR", "UB", "UL"}
+MIDDLE_EDGE_POSITIONS = {"FR", "BR", "BL", "FL"}
+BOTTOM_EDGE_POSITIONS = {"DF", "DR", "DB", "DL"}
+
 
 def find_f2l_pair(cube, pair_name):
     """
@@ -173,6 +180,102 @@ def get_f2l_status(cube):
         }
 
     return status
+
+def get_f2l_pair_case(cube, pair_name):
+    """
+    Classify the current case of one F2L pair.
+
+    This function does not solve anything yet.
+    It only describes where the corner and edge are located.
+
+    Args:
+        cube:
+            RubiksCube object.
+
+        pair_name:
+            One of:
+                - Green-Red
+                - Red-Blue
+                - Blue-Orange
+                - Orange-Green
+
+    Returns:
+        Dictionary describing the pair case.
+    """
+    pair = find_f2l_pair(cube, pair_name)
+
+    corner_position = pair["corner_position"]
+    edge_position = pair["edge_position"]
+
+    corner_in_top = corner_position in TOP_CORNER_POSITIONS
+    corner_in_bottom = corner_position in BOTTOM_CORNER_POSITIONS
+
+    edge_in_top = edge_position in TOP_EDGE_POSITIONS
+    edge_in_middle = edge_position in MIDDLE_EDGE_POSITIONS
+    edge_in_bottom = edge_position in BOTTOM_EDGE_POSITIONS
+
+    corner_in_target_slot = corner_position == pair["corner_target"]
+    edge_in_target_slot = edge_position == pair["edge_target"]
+
+    solved = is_f2l_pair_solved(cube, pair_name)
+
+    if solved:
+        case_type = "solved"
+    elif corner_in_top and edge_in_top:
+        case_type = "corner_top_edge_top"
+    elif corner_in_top and edge_in_middle:
+        case_type = "corner_top_edge_middle"
+    elif corner_in_top and edge_in_bottom:
+        case_type = "corner_top_edge_bottom"
+    elif corner_in_bottom and edge_in_top:
+        case_type = "corner_bottom_edge_top"
+    elif corner_in_bottom and edge_in_middle:
+        case_type = "corner_bottom_edge_middle"
+    elif corner_in_bottom and edge_in_bottom:
+        case_type = "corner_bottom_edge_bottom"
+    else:
+        case_type = "unknown"
+
+    return {
+        **pair,
+        "corner_in_top": corner_in_top,
+        "corner_in_bottom": corner_in_bottom,
+        "edge_in_top": edge_in_top,
+        "edge_in_middle": edge_in_middle,
+        "edge_in_bottom": edge_in_bottom,
+        "corner_in_target_slot": corner_in_target_slot,
+        "edge_in_target_slot": edge_in_target_slot,
+        "solved": solved,
+        "case_type": case_type,
+    }
+
+def print_f2l_pair_case(cube, pair_name):
+    """
+    Print the classified case of one F2L pair.
+    """
+    pair_case = get_f2l_pair_case(cube, pair_name)
+
+    print(f"F2L Pair Case: {pair_name}")
+    print("-------------------------")
+    print(f"Case type:              {pair_case['case_type']}")
+    print(f"Corner position:        {pair_case['corner_position']}")
+    print(f"Corner target:          {pair_case['corner_target']}")
+    print(f"Corner stickers:        {pair_case['corner_stickers']}")
+    print(f"Corner target stickers: {pair_case['corner_target_stickers']}")
+    print(f"Corner in top?          {pair_case['corner_in_top']}")
+    print(f"Corner in bottom?       {pair_case['corner_in_bottom']}")
+    print(f"Corner in target slot?  {pair_case['corner_in_target_slot']}")
+    print()
+    print(f"Edge position:          {pair_case['edge_position']}")
+    print(f"Edge target:            {pair_case['edge_target']}")
+    print(f"Edge stickers:          {pair_case['edge_stickers']}")
+    print(f"Edge target stickers:   {pair_case['edge_target_stickers']}")
+    print(f"Edge in top?            {pair_case['edge_in_top']}")
+    print(f"Edge in middle?         {pair_case['edge_in_middle']}")
+    print(f"Edge in bottom?         {pair_case['edge_in_bottom']}")
+    print(f"Edge in target slot?    {pair_case['edge_in_target_slot']}")
+    print()
+    print(f"Solved?                 {pair_case['solved']}")
 
 
 def print_f2l_status(cube):
