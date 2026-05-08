@@ -129,6 +129,7 @@ def test_all_f2l_pair_cases_have_case_type():
         assert "case_type" in pair_case
         assert pair_case["case_type"] in {
             "solved",
+            "inserted_but_corner_twisted",
             "corner_top_edge_top",
             "corner_top_edge_middle",
             "corner_top_edge_bottom",

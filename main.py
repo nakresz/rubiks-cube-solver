@@ -1,85 +1,104 @@
 from src.cube import RubiksCube
-from src.scrambler import generate_scramble
 from src.solvers.cross_solver import (
     solve_cross,
     is_white_cross_solved,
     print_white_cross_status,
 )
-
 from src.solvers.f2l_solver import (
-    print_f2l_status,
-    print_f2l_pair_case,
     normalize_green_red_pair,
+    print_f2l_pair_case,
+    is_f2l_pair_solved,
 )
 
 
-def main():
+CANDIDATE_INSERTION_ALGORITHMS = [
+    ["U", "R", "U'", "R'", "U'", "F'", "U", "F"],
+    ["R", "U", "R'", "U'", "R", "U", "R'"],
+    ["R", "U'", "R'", "U", "F'", "U", "F"],
+    ["F'", "U'", "F", "U", "R", "U'", "R'"],
+    ["U'", "F'", "U", "F", "U", "R", "U'", "R'"],
+    ["U", "R", "U'", "R'", "U", "R", "U'", "R'"],
+    ["R", "U", "R'", "U2", "R", "U'", "R'"],
+    ["F'", "U", "F", "U2", "R", "U", "R'"],
+]
+
+
+def build_current_test_case():
+    """
+    Rebuild the exact case from the last run:
+
+    After scramble + cross + normalize, we reached:
+        Green-Red corner: UFR
+        Green-Red edge: UF
+    """
     cube = RubiksCube()
 
-    print("Rubik's Cube Green-Red F2L Preparation Demo")
-    print("===========================================")
-    print()
-
-    print("Generating random scramble...")
-    print("-----------------------------")
-
-    scramble = generate_scramble(length=20)
-
-    print("Scramble:")
-    print(" ".join(scramble))
+    scramble = [
+        "U2", "L'", "R", "R2", "U", "F", "D'", "D", "B2", "B",
+        "B2", "F'", "D", "D2", "B2", "D'", "L", "U", "L'", "L'",
+    ]
 
     cube.apply_algorithm(scramble)
 
-    print()
-    print("Solving bottom white cross first...")
-    print("-----------------------------------")
+    solve_cross(cube)
 
-    cross_moves = solve_cross(cube)
+    normalize_green_red_pair(cube)
 
-    print()
-    print("Cross moves:")
-    print(cross_moves)
+    return cube
 
+
+def main():
+    print("Green-Red F2L Insertion Algorithm Tester")
+    print("========================================")
     print()
-    print("White cross status after cross solver:")
+
+    base_cube = build_current_test_case()
+
+    print("Base case after cross + normalization:")
     print("--------------------------------------")
-    print_white_cross_status(cube)
-
-    print("Is white cross solved?")
-    print(is_white_cross_solved(cube))
+    print_f2l_pair_case(base_cube, "Green-Red")
 
     print()
-    print("Green-Red F2L case before preparation:")
-    print("--------------------------------------")
-    print_f2l_pair_case(cube, "Green-Red")
+    print("Is white cross solved before testing?")
+    print(is_white_cross_solved(base_cube))
 
     print()
-    print("Preparing Green-Red F2L pair...")
-    print("--------------------------------")
-
-    f2l_moves = normalize_green_red_pair(cube)
-
-    print()
-    print("F2L preparation moves:")
-    print(f2l_moves)
-
-    print()
-    print("Green-Red F2L case after preparation:")
-    print("-------------------------------------")
-    print_f2l_pair_case(cube, "Green-Red")
-
-    print()
-    print("Full F2L status after preparation:")
-    print("----------------------------------")
-    print_f2l_status(cube)
-
-    print()
-    print("White cross status after F2L preparation:")
+    print("Testing candidate insertion algorithms...")
     print("-----------------------------------------")
-    print_white_cross_status(cube)
 
-    print("Is white cross still solved?")
-    print(is_white_cross_solved(cube))
+    for index, algorithm in enumerate(CANDIDATE_INSERTION_ALGORITHMS, start=1):
+        cube = build_current_test_case()
+
+        print()
+        print("=" * 70)
+        print(f"Candidate #{index}")
+        print("Algorithm:")
+        print(algorithm)
+
+        cube.apply_algorithm(algorithm)
+
+        print()
+        print("Green-Red case after algorithm:")
+        print("-------------------------------")
+        print_f2l_pair_case(cube, "Green-Red")
+
+        green_red_solved = is_f2l_pair_solved(cube, "Green-Red")
+        cross_solved = is_white_cross_solved(cube)
+
+        print("Green-Red solved?")
+        print(green_red_solved)
+
+        print("White cross still solved?")
+        print(cross_solved)
+
+        if green_red_solved and cross_solved:
+            print()
+            print("FOUND WORKING INSERTION ALGORITHM!")
+            print(algorithm)
+            return
+
+    print()
+    print("No candidate solved this case yet.")
 
 
 if __name__ == "__main__":
