@@ -222,3 +222,28 @@ def test_bottom_white_orange_bottom_layer_dr():
 
 def test_bottom_white_orange_bottom_layer_db():
     run_bottom_white_orange_case(["L2", "D'"])
+
+from src.solvers.cross_solver import solve_cross, is_white_cross_solved
+
+
+FAILED_SCRAMBLE_REGRESSION_CASES = [
+    ["L", "F", "F2", "D2", "B", "F'", "B", "F2"],
+    ["L2", "L", "D'", "F2", "B'", "U", "F2", "L"],
+    ["L'", "F", "B'", "L", "R", "F'", "D", "D2"],
+    ["B", "B'", "B'", "L'", "F2", "D2", "F'", "D2"],
+    ["R", "L'", "B", "D2", "B", "D'", "U2", "R2"],
+    ["R2", "D", "B", "L'", "D", "D", "F", "B2"],
+    ["D'", "F2", "L'", "R'", "B'", "U", "U2", "F'"],
+    ["B2", "F", "U'", "D'", "L2", "D", "R2", "F2"],
+]
+
+
+def test_solve_cross_regression_failed_scrambles():
+    for scramble in FAILED_SCRAMBLE_REGRESSION_CASES:
+        cube = RubiksCube()
+
+        cube.apply_algorithm(scramble)
+
+        solve_cross(cube)
+
+        assert is_white_cross_solved(cube) is True
