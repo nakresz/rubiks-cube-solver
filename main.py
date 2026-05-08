@@ -1,74 +1,64 @@
 from src.cube import RubiksCube
-from src.scrambler import generate_scramble, inverse_algorithm
-from src.piece_detector import (
-    find_edge_by_colors,
-    find_corner_by_colors,
-    validate_pieces,
+from src.scrambler import generate_scramble
+from src.solvers.cross_solver import (
+    solve_white_green_edge,
+    print_white_cross_status,
+    is_white_green_edge_solved,
 )
 
 
 def main():
     cube = RubiksCube()
 
-    print("Rubik's Cube Solver Demo")
-    print("========================")
+    print("Rubik's Cube CFOP Cross Demo")
+    print("============================")
     print()
 
-    print("Initial cube:")
-    print("-------------")
-    cube.display()
-
-    print("Solved?")
-    print(cube.is_solved())
-
-    print()
-    print("Finding pieces on solved cube:")
-    print("------------------------------")
-    print("White-Green edge:", find_edge_by_colors(cube, ["W", "G"]))
-    print("White-Green-Red corner:", find_corner_by_colors(cube, ["W", "G", "R"]))
-    print("Pieces valid?", validate_pieces(cube))
-
-    print()
     print("Generating random scramble...")
     print("-----------------------------")
 
-    scramble = generate_scramble(length=20)
+    scramble = generate_scramble(length=8)
 
     print("Scramble:")
     print(" ".join(scramble))
 
-    print()
-    print("Applying scramble...")
-    print("--------------------")
-
     cube.apply_algorithm(scramble)
-    cube.display()
-
-    print("Solved after scramble?")
-    print(cube.is_solved())
-    print("Pieces valid after scramble?")
-    print(validate_pieces(cube))
 
     print()
-    print("Generating inverse solution...")
-    print("------------------------------")
-
-    solution = inverse_algorithm(scramble)
-
-    print("Solution:")
-    print(" ".join(solution))
-
-    print()
-    print("Applying solution...")
+    print("Cube after scramble:")
     print("--------------------")
-
-    cube.apply_algorithm(solution)
     cube.display()
 
-    print("Solved after solution?")
-    print(cube.is_solved())
-    print("Pieces valid after solution?")
-    print(validate_pieces(cube))
+    print()
+    print("White cross status before solving White-Green edge:")
+    print("---------------------------------------------------")
+    print_white_cross_status(cube)
+
+    print("Is White-Green edge solved?")
+    print(is_white_green_edge_solved(cube))
+
+    print()
+    print("Trying to solve White-Green edge...")
+    print("-----------------------------------")
+
+    moves = solve_white_green_edge(cube)
+
+    print()
+    print("Moves used:")
+    print(moves)
+
+    print()
+    print("Cube after White-Green attempt:")
+    print("-------------------------------")
+    cube.display()
+
+    print()
+    print("White cross status after solving White-Green edge:")
+    print("--------------------------------------------------")
+    print_white_cross_status(cube)
+
+    print("Is White-Green edge solved?")
+    print(is_white_green_edge_solved(cube))
 
 
 if __name__ == "__main__":
