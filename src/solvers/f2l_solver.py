@@ -630,6 +630,25 @@ def insert_green_red_pair(cube):
         total_moves.extend(moves)
 
         return total_moves
+    
+    # Case 6:
+    # UBL ['W', 'R', 'G'] + UF ['G', 'R']
+    if (
+        pair_case["case_type"] == "corner_top_edge_top"
+        and pair_case["corner_position"] == "UBL"
+        and pair_case["corner_stickers"] == ["W", "R", "G"]
+        and pair_case["edge_position"] == "UF"
+        and pair_case["edge_stickers"] == ["G", "R"]
+    ):
+        moves = ["R", "F", "U2", "F'", "U'", "R'"]
+
+        print("[F2L Solver] Supported insertion case found.")
+        print(f"[F2L Solver] Applying moves: {moves}")
+
+        cube.apply_algorithm(moves)
+        total_moves.extend(moves)
+
+        return total_moves
 
     print("[F2L Solver] No insertion algorithm implemented for this Green-Red case yet.")
     return total_moves
