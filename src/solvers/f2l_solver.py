@@ -620,7 +620,17 @@ GREEN_RED_F2L_CASES = [
         "edge_stickers": ["R", "G"],
         "algorithm": ["F'", "U'", "L", "F'", "L'", "F2"],
     },
-    
+
+    {
+        "name": "green_red_case_16",
+        "case_type": "corner_top_edge_top",
+        "corner_position": "ULF",
+        "corner_stickers": ["R", "G", "W"],
+        "edge_position": "UF",
+        "edge_stickers": ["G", "R"],
+        "algorithm": ["U2", "R2", "U", "R", "U'", "R2"],
+    },
+
 ]
 
 
