@@ -9,13 +9,18 @@ from src.solvers.f2l_solver import (
     normalize_green_red_pair,
     print_f2l_pair_case,
     is_f2l_pair_solved,
+    get_f2l_pair_case,
 )
 
 
-SCRAMBLE = [
-    "R'", "R", "D", "B2", "U'", "R'", "F", "B2", "R2", "B2",
-    "U", "R'", "U'", "B'", "F2", "D2", "B", "B'", "R2", "D",
+# Change only this scramble when you want to investigate a new case.
+TARGET_SCRAMBLE = [
+    "F'", "U'", "L2", "B'", "R'", "D", "U", "D'", "R2", "F'",
+    "R2", "R'", "B", "F'", "R'", "F2", "B2", "U'", "U", "L",
 ]
+
+
+NEXT_CASE_NAME = "green_red_case_12"
 
 
 MOVES = [
@@ -39,6 +44,14 @@ def get_move_face(move):
 
 
 def has_bad_repetition(sequence):
+    """
+    Skip obviously redundant sequences:
+        R R'
+        R' R
+        R2 R2
+        U U'
+        same face repeated consecutively
+    """
     for first_move, second_move in zip(sequence, sequence[1:]):
         if (first_move, second_move) in INVERSE_PAIRS:
             return True
@@ -51,7 +64,7 @@ def has_bad_repetition(sequence):
 
 def build_current_case():
     cube = RubiksCube()
-    cube.apply_algorithm(SCRAMBLE)
+    cube.apply_algorithm(TARGET_SCRAMBLE)
 
     with redirect_stdout(io.StringIO()):
         solve_cross(cube)
@@ -60,13 +73,36 @@ def build_current_case():
     return cube
 
 
+def print_case_table_entry(case_definition, algorithm):
+    print()
+    print("Case table entry:")
+    print("-----------------")
+    print("Copy this into GREEN_RED_F2L_CASES:")
+    print()
+    print("    {")
+    print(f'        "name": "{NEXT_CASE_NAME}",')
+    print(f'        "case_type": "{case_definition["case_type"]}",')
+    print(f'        "corner_position": "{case_definition["corner_position"]}",')
+    print(f'        "corner_stickers": {case_definition["corner_stickers"]},')
+    print(f'        "edge_position": "{case_definition["edge_position"]}",')
+    print(f'        "edge_stickers": {case_definition["edge_stickers"]},')
+    print(f'        "algorithm": {algorithm},')
+    print("    },")
+
+
 def brute_force_current_green_red_case(max_depth=7):
     base_cube = build_current_case()
+    base_case = get_f2l_pair_case(base_cube, "Green-Red")
 
     print("Green-Red Current Case Brute Force Finder")
     print("=========================================")
     print()
 
+    print("Target scramble:")
+    print("---------------")
+    print(TARGET_SCRAMBLE)
+
+    print()
     print("Base case:")
     print("----------")
     print_f2l_pair_case(base_cube, "Green-Red")
@@ -108,6 +144,8 @@ def brute_force_current_green_red_case(max_depth=7):
                 print("Green-Red case after algorithm:")
                 print("-------------------------------")
                 print_f2l_pair_case(cube, "Green-Red")
+
+                print_case_table_entry(base_case, sequence)
 
                 return sequence
 
