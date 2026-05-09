@@ -15,11 +15,11 @@ from src.solvers.f2l_solver import (
 
 # Change only this scramble when you want to investigate a new case.
 TARGET_SCRAMBLE = [
-    "L", "F", "B2", "D2", "D'", "U'", "F", "R'", "B", "R2",
-    "D", "U2", "F'", "F2", "U2", "R'", "U", "B2", "R2", "U'",
+    "L'", "L", "F'", "R'", "D2", "F", "D2", "F'", "R", "R",
+    "D2", "U'", "D2", "U2", "B", "R", "D'", "L", "U'", "R2",
 ]
 
-NEXT_CASE_NAME = "green_red_case_29"
+NEXT_CASE_NAME = "green_red_case_30"
 
 
 MOVES = [
