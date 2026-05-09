@@ -429,13 +429,24 @@ def normalize_green_red_pair(cube, max_attempts=4):
     Goal:
         Move the Green-Red corner and edge into the top layer if possible.
 
-    This repeatedly calls prepare_green_red_pair().
-    Each call may extract either the corner or the edge.
+    Safety:
+        If the same case appears again, stop early.
+        This prevents repeated loops such as:
+            corner_top_edge_middle -> corner_bottom_edge_top -> corner_top_edge_middle
     """
     full_moves = []
+    seen_cases = set()
 
     for attempt in range(max_attempts):
         pair_case = get_f2l_pair_case(cube, "Green-Red")
+
+        case_signature = (
+            pair_case["case_type"],
+            pair_case["corner_position"],
+            tuple(pair_case["corner_stickers"]),
+            pair_case["edge_position"],
+            tuple(pair_case["edge_stickers"]),
+        )
 
         print(f"[F2L Solver] Normalize attempt {attempt + 1}")
         print(f"[F2L Solver] Current case type: {pair_case['case_type']}")
@@ -453,6 +464,13 @@ def normalize_green_red_pair(cube, max_attempts=4):
             print("[F2L Solver] Green-Red pair is normalized: both pieces are in top layer.")
             return full_moves
 
+        if case_signature in seen_cases:
+            print("[F2L Solver] Repeated Green-Red normalization case detected.")
+            print("[F2L Solver] Stopping normalization to avoid an infinite loop.")
+            return full_moves
+
+        seen_cases.add(case_signature)
+
         moves = prepare_green_red_pair(cube)
 
         if moves == []:
@@ -464,7 +482,6 @@ def normalize_green_red_pair(cube, max_attempts=4):
     print("[F2L Solver] Max normalization attempts reached.")
     return full_moves
 
-
 def insert_green_red_pair(cube):
     """
     Try to insert the normalized Green-Red F2L pair into the FR slot.
@@ -473,12 +490,12 @@ def insert_green_red_pair(cube):
         Corner -> DFR
         Edge   -> FR
 
-    Current supported case:
-        - case_type: corner_top_edge_top
-        - corner_position: UFR
-        - edge_position: UR
+    Supported insertion cases are checked with both:
+        - piece positions
+        - sticker orientations
 
-    This is an experimental first insertion case.
+    This is important because the same position can represent different
+    F2L orientation cases.
     """
     pair_case = get_f2l_pair_case(cube, "Green-Red")
 
@@ -492,47 +509,106 @@ def insert_green_red_pair(cube):
     if pair_case["solved"] is True:
         print("[F2L Solver] Green-Red pair is already solved.")
         return []
+
     if pair_case["case_type"] == "inserted_but_corner_twisted":
         return extract_inserted_green_red_pair(cube)
-    
-    if (
-        pair_case["corner_in_top"] is True
-        and pair_case["edge_in_top"] is True
-        and not (
-            pair_case["corner_position"] == "UFR"
-            and pair_case["edge_position"] == "UR"
-        )
-    ):
-        align_moves = align_green_red_top_pair_for_insertion(cube)
 
-        if align_moves:
-            pair_case = get_f2l_pair_case(cube, "Green-Red")
-        else:
-            return []
+    total_moves = []
 
+    # Case 1:
+    # UFR ['W', 'R', 'G'] + UR ['G', 'R']
     if (
         pair_case["case_type"] == "corner_top_edge_top"
         and pair_case["corner_position"] == "UFR"
+        and pair_case["corner_stickers"] == ["W", "R", "G"]
         and pair_case["edge_position"] == "UR"
+        and pair_case["edge_stickers"] == ["G", "R"]
     ):
-        moves = ["U", "R", "U'", "R'", "U'", "F'", "U", "F"]
+        moves = ["R", "U'", "R", "U", "R'", "U'", "R2"]
 
         print("[F2L Solver] Supported insertion case found.")
         print(f"[F2L Solver] Applying moves: {moves}")
 
         cube.apply_algorithm(moves)
+        total_moves.extend(moves)
 
-        return moves
+        return total_moves
+
+    # Case 2:
+    # ULF ['R', 'G', 'W'] + UL ['R', 'G']
+    if (
+        pair_case["case_type"] == "corner_top_edge_top"
+        and pair_case["corner_position"] == "ULF"
+        and pair_case["corner_stickers"] == ["R", "G", "W"]
+        and pair_case["edge_position"] == "UL"
+        and pair_case["edge_stickers"] == ["R", "G"]
+    ):
+        moves = ["U", "F'", "U2", "F"]
+
+        print("[F2L Solver] Supported insertion case found.")
+        print(f"[F2L Solver] Applying moves: {moves}")
+
+        cube.apply_algorithm(moves)
+        total_moves.extend(moves)
+
+        return total_moves
+
+    # Case 3:
+    # UBL ['W', 'R', 'G'] + UF ['R', 'G']
+    if (
+        pair_case["case_type"] == "corner_top_edge_top"
+        and pair_case["corner_position"] == "UBL"
+        and pair_case["corner_stickers"] == ["W", "R", "G"]
+        and pair_case["edge_position"] == "UF"
+        and pair_case["edge_stickers"] == ["R", "G"]
+    ):
+        moves = ["F'", "L", "F'", "L'", "F2"]
+
+        print("[F2L Solver] Supported insertion case found.")
+        print(f"[F2L Solver] Applying moves: {moves}")
+
+        cube.apply_algorithm(moves)
+        total_moves.extend(moves)
+
+        return total_moves
+
+    # If both pieces are on the top layer but not directly supported,
+    # try U-layer alignment to reach a supported case.
+    if (
+        pair_case["corner_in_top"] is True
+        and pair_case["edge_in_top"] is True
+    ):
+        align_moves = align_green_red_top_pair_for_insertion(cube)
+
+        if align_moves:
+            total_moves.extend(align_moves)
+            pair_case = get_f2l_pair_case(cube, "Green-Red")
+
+            # After alignment, try insertion again once.
+            insertion_moves = insert_green_red_pair(cube)
+            total_moves.extend(insertion_moves)
+
+            return total_moves
+
+        print("[F2L Solver] Could not align Green-Red pair for insertion.")
+        return total_moves
 
     print("[F2L Solver] No insertion algorithm implemented for this Green-Red case yet.")
-    return []
+    return total_moves
 
 def align_green_red_top_pair_for_insertion(cube):
     """
     Try to align the Green-Red pair on the U layer before insertion.
 
-    This version tests U moves directly on the cube and undoes them
-    if they do not match the target insertion case.
+    Important:
+        We do not only check positions.
+        We also check sticker orientation.
+
+    Supported target insertion case:
+        corner_position == UFR
+        corner_stickers == ["W", "R", "G"]
+        edge_position == UR
+        edge_stickers == ["G", "R"]
     """
     candidate_u_moves = [
         [],
@@ -557,7 +633,9 @@ def align_green_red_top_pair_for_insertion(cube):
         if (
             pair_case["case_type"] == "corner_top_edge_top"
             and pair_case["corner_position"] == "UFR"
+            and pair_case["corner_stickers"] == ["W", "R", "G"]
             and pair_case["edge_position"] == "UR"
+            and pair_case["edge_stickers"] == ["G", "R"]
         ):
             print("[F2L Solver] Found U-layer alignment for Green-Red pair.")
             print(f"[F2L Solver] Alignment moves: {moves}")
