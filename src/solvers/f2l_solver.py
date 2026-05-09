@@ -651,6 +651,26 @@ GREEN_RED_F2L_CASES = [
         "algorithm": ["U'", "R", "F", "R'", "F'", "R'"],
     },
 
+    {
+        "name": "green_red_case_19",
+        "case_type": "corner_top_edge_top",
+        "corner_position": "UFR",
+        "corner_stickers": ['R', 'G', 'W'],
+        "edge_position": "UF",
+        "edge_stickers": ['R', 'G'],
+        "algorithm": ["U'", "F'", 'U', 'F'],
+    },
+
+    {
+        "name": "green_red_case_20",
+        "case_type": "corner_top_edge_top",
+        "corner_position": "URB",
+        "corner_stickers": ["R", "G", "W"],
+        "edge_position": "UF",
+        "edge_stickers": ["R", "G"],
+        "algorithm": ["R", "F", "R", "F'", "R'"],
+    },
+
 ]
 
 
