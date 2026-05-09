@@ -22,10 +22,20 @@ class RubiksCube:
     def __init__(self):
         """
         Create a solved Rubik's Cube.
+
+        CFOP orientation:
+            U = Yellow
+            D = White
+            F = Green
+            B = Blue
+            R = Red
+            L = Orange
+
+        This matches the standard white-cross-on-bottom solving setup.
         """
         self.faces = {
-            "U": ["W"] * 9,
-            "D": ["Y"] * 9,
+            "U": ["Y"] * 9,
+            "D": ["W"] * 9,
             "F": ["G"] * 9,
             "B": ["B"] * 9,
             "R": ["R"] * 9,

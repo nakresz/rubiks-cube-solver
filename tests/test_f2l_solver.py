@@ -14,44 +14,40 @@ def test_find_green_red_f2l_pair_on_initial_cube():
 
     pair = find_f2l_pair(cube, "Green-Red")
 
-    assert pair["corner_position"] == "UFR"
+    assert pair["corner_position"] == "DFR"
     assert pair["edge_position"] == "FR"
     assert pair["corner_stickers"] == ["W", "G", "R"]
     assert pair["edge_stickers"] == ["G", "R"]
-
 
 def test_find_red_blue_f2l_pair_on_initial_cube():
     cube = RubiksCube()
 
     pair = find_f2l_pair(cube, "Red-Blue")
 
-    assert pair["corner_position"] == "URB"
+    assert pair["corner_position"] == "DRB"
     assert pair["edge_position"] == "BR"
     assert pair["corner_stickers"] == ["W", "R", "B"]
     assert pair["edge_stickers"] == ["B", "R"]
-
 
 def test_find_blue_orange_f2l_pair_on_initial_cube():
     cube = RubiksCube()
 
     pair = find_f2l_pair(cube, "Blue-Orange")
 
-    assert pair["corner_position"] == "UBL"
+    assert pair["corner_position"] == "DBL"
     assert pair["edge_position"] == "BL"
     assert pair["corner_stickers"] == ["W", "B", "O"]
     assert pair["edge_stickers"] == ["B", "O"]
-
 
 def test_find_orange_green_f2l_pair_on_initial_cube():
     cube = RubiksCube()
 
     pair = find_f2l_pair(cube, "Orange-Green")
 
-    assert pair["corner_position"] == "ULF"
+    assert pair["corner_position"] == "DLF"
     assert pair["edge_position"] == "FL"
     assert pair["corner_stickers"] == ["W", "O", "G"]
     assert pair["edge_stickers"] == ["G", "O"]
-
 
 def test_find_all_f2l_pairs_returns_four_pairs():
     cube = RubiksCube()
@@ -79,41 +75,42 @@ def test_f2l_status_contains_all_pairs():
     }
 
 
-def test_initial_cube_is_not_f2l_solved_for_bottom_white_orientation():
+def test_initial_cube_is_f2l_solved_for_bottom_white_orientation():
     cube = RubiksCube()
 
-    assert is_f2l_solved(cube) is False
+    assert is_f2l_solved(cube) is True
 
-
-def test_individual_pairs_not_solved_on_initial_cube_for_bottom_white_orientation():
+def test_individual_pairs_solved_on_initial_cube_for_bottom_white_orientation():
     cube = RubiksCube()
 
-    assert is_f2l_pair_solved(cube, "Green-Red") is False
-    assert is_f2l_pair_solved(cube, "Red-Blue") is False
-    assert is_f2l_pair_solved(cube, "Blue-Orange") is False
-    assert is_f2l_pair_solved(cube, "Orange-Green") is False
+    assert is_f2l_pair_solved(cube, "Green-Red") is True
+    assert is_f2l_pair_solved(cube, "Red-Blue") is True
+    assert is_f2l_pair_solved(cube, "Blue-Orange") is True
+    assert is_f2l_pair_solved(cube, "Orange-Green") is True
 
 def test_green_red_f2l_case_on_initial_cube():
     cube = RubiksCube()
 
     pair_case = get_f2l_pair_case(cube, "Green-Red")
 
-    assert pair_case["corner_position"] == "UFR"
+    assert pair_case["corner_position"] == "DFR"
     assert pair_case["edge_position"] == "FR"
 
-    assert pair_case["corner_in_top"] is True
-    assert pair_case["corner_in_bottom"] is False
+    assert pair_case["corner_in_top"] is False
+    assert pair_case["corner_in_bottom"] is True
 
     assert pair_case["edge_in_top"] is False
     assert pair_case["edge_in_middle"] is True
     assert pair_case["edge_in_bottom"] is False
 
-    assert pair_case["corner_in_target_slot"] is False
+    assert pair_case["corner_in_target_slot"] is True
     assert pair_case["edge_in_target_slot"] is True
 
-    assert pair_case["case_type"] == "corner_top_edge_middle"
-    assert pair_case["solved"] is False
+    assert pair_case["corner_orientation_correct"] is True
+    assert pair_case["edge_orientation_correct"] is True
 
+    assert pair_case["case_type"] == "solved"
+    assert pair_case["solved"] is True
 
 def test_all_f2l_pair_cases_have_case_type():
     cube = RubiksCube()

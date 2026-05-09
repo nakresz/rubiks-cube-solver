@@ -492,6 +492,8 @@ def insert_green_red_pair(cube):
     if pair_case["solved"] is True:
         print("[F2L Solver] Green-Red pair is already solved.")
         return []
+    if pair_case["case_type"] == "inserted_but_corner_twisted":
+        return extract_inserted_green_red_pair(cube)
     
     if (
         pair_case["corner_in_top"] is True
@@ -568,4 +570,39 @@ def align_green_red_top_pair_for_insertion(cube):
             cube.apply_algorithm(undo)
 
     print("[F2L Solver] No U-layer alignment found for current Green-Red pair.")
+    return []
+
+def extract_inserted_green_red_pair(cube):
+    """
+    Extract the Green-Red F2L pair when it is inserted but the corner is twisted.
+
+    Supported case:
+        - case_type: inserted_but_corner_twisted
+        - corner_position: DFR
+        - edge_position: FR
+
+    Goal:
+        Move the Green-Red pair out of the FR slot so it can be normalized again.
+    """
+    pair_case = get_f2l_pair_case(cube, "Green-Red")
+
+    print("[F2L Solver] Checking inserted Green-Red pair extraction...")
+    print(f"[F2L Solver] Case type: {pair_case['case_type']}")
+    print(f"[F2L Solver] Corner position: {pair_case['corner_position']}")
+    print(f"[F2L Solver] Corner stickers: {pair_case['corner_stickers']}")
+    print(f"[F2L Solver] Edge position: {pair_case['edge_position']}")
+    print(f"[F2L Solver] Edge stickers: {pair_case['edge_stickers']}")
+
+    if pair_case["case_type"] == "inserted_but_corner_twisted":
+        moves = ["R", "U", "R'"]
+
+        print("[F2L Solver] Inserted but twisted Green-Red pair found.")
+        print("[F2L Solver] Extracting pair from FR slot.")
+        print(f"[F2L Solver] Applying moves: {moves}")
+
+        cube.apply_algorithm(moves)
+
+        return moves
+
+    print("[F2L Solver] No inserted twisted Green-Red pair found.")
     return []

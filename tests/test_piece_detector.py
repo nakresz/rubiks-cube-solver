@@ -17,46 +17,46 @@ def test_solved_cube_edges_are_detected_correctly():
 
     edges = get_edge_pieces(cube)
 
-    assert edges["UF"] == ["W", "G"]
-    assert edges["UR"] == ["W", "R"]
-    assert edges["UB"] == ["W", "B"]
-    assert edges["UL"] == ["W", "O"]
+    assert edges["UF"] == ["Y", "G"]
+    assert edges["UR"] == ["Y", "R"]
+    assert edges["UB"] == ["Y", "B"]
+    assert edges["UL"] == ["Y", "O"]
 
-    assert edges["DF"] == ["Y", "G"]
-    assert edges["DR"] == ["Y", "R"]
-    assert edges["DB"] == ["Y", "B"]
-    assert edges["DL"] == ["Y", "O"]
-
+    assert edges["DF"] == ["W", "G"]
+    assert edges["DR"] == ["W", "R"]
+    assert edges["DB"] == ["W", "B"]
+    assert edges["DL"] == ["W", "O"]
 
 def test_solved_cube_corners_are_detected_correctly():
     cube = RubiksCube()
 
     corners = get_corner_pieces(cube)
 
-    assert corners["UFR"] == ["W", "G", "R"]
-    assert corners["URB"] == ["W", "R", "B"]
-    assert corners["UBL"] == ["W", "B", "O"]
-    assert corners["ULF"] == ["W", "O", "G"]
+    assert corners["UFR"] == ["Y", "G", "R"]
+    assert corners["URB"] == ["Y", "R", "B"]
+    assert corners["UBL"] == ["Y", "B", "O"]
+    assert corners["ULF"] == ["Y", "O", "G"]
 
-    assert corners["DFR"] == ["Y", "G", "R"]
-    assert corners["DRB"] == ["Y", "R", "B"]
-    assert corners["DBL"] == ["Y", "B", "O"]
-    assert corners["DLF"] == ["Y", "O", "G"]
-
+    assert corners["DFR"] == ["W", "G", "R"]
+    assert corners["DRB"] == ["W", "R", "B"]
+    assert corners["DBL"] == ["W", "B", "O"]
+    assert corners["DLF"] == ["W", "O", "G"]
 
 def test_find_specific_edge_on_solved_cube():
     cube = RubiksCube()
 
-    assert find_edge_by_colors(cube, ["W", "G"]) == "UF"
-    assert find_edge_by_colors(cube, ["G", "W"]) == "UF"
-
+    assert find_edge_by_colors(cube, ["W", "G"]) == "DF"
+    assert find_edge_by_colors(cube, ["W", "R"]) == "DR"
+    assert find_edge_by_colors(cube, ["W", "B"]) == "DB"
+    assert find_edge_by_colors(cube, ["W", "O"]) == "DL"
 
 def test_find_specific_corner_on_solved_cube():
     cube = RubiksCube()
 
-    assert find_corner_by_colors(cube, ["W", "G", "R"]) == "UFR"
-    assert find_corner_by_colors(cube, ["R", "W", "G"]) == "UFR"
-
+    assert find_corner_by_colors(cube, ["W", "G", "R"]) == "DFR"
+    assert find_corner_by_colors(cube, ["W", "R", "B"]) == "DRB"
+    assert find_corner_by_colors(cube, ["W", "B", "O"]) == "DBL"
+    assert find_corner_by_colors(cube, ["W", "O", "G"]) == "DLF"
 
 def test_each_single_move_keeps_pieces_valid():
     for move in ALL_MOVES:
