@@ -931,6 +931,78 @@ def apply_known_green_red_f2l_case(cube, pair_case):
     return moves
 
 
+def invert_algorithm(moves):
+    """
+    Return the inverse of a move sequence.
+
+    Example:
+        ["U", "R", "U'"] -> ["U", "R'", "U'"]
+    """
+    inverse_move_map = {
+        "U": "U'",
+        "U'": "U",
+        "U2": "U2",
+        "D": "D'",
+        "D'": "D",
+        "D2": "D2",
+        "R": "R'",
+        "R'": "R",
+        "R2": "R2",
+        "L": "L'",
+        "L'": "L",
+        "L2": "L2",
+        "F": "F'",
+        "F'": "F",
+        "F2": "F2",
+        "B": "B'",
+        "B'": "B",
+        "B2": "B2",
+    }
+
+    return [
+        inverse_move_map[move]
+        for move in reversed(moves)
+    ]
+
+
+def apply_known_green_red_f2l_case_with_u_rotations(cube):
+    """
+    Try to solve the Green-Red F2L pair by rotating only the U layer
+    before checking the known Green-Red F2L case table.
+
+    This is CFOP-style behavior:
+        - F2L cases often require a U, U2, or U' setup move.
+        - Instead of storing every U-rotated duplicate case, we test
+          the same case table after simple U-layer adjustments.
+
+    If a setup works, this function applies:
+        setup_moves + known_case_algorithm
+
+    If no setup works, the cube is restored to its original state.
+    """
+    setup_attempts = [
+        ["U"],
+        ["U2"],
+        ["U'"],
+    ]
+
+    for setup_moves in setup_attempts:
+        cube.apply_algorithm(setup_moves)
+
+        rotated_pair_case = get_f2l_pair_case(cube, "Green-Red")
+        known_case_moves = apply_known_green_red_f2l_case(
+            cube,
+            rotated_pair_case,
+        )
+
+        if known_case_moves:
+            return setup_moves + known_case_moves
+
+        cube.apply_algorithm(invert_algorithm(setup_moves))
+
+    return []
+
+
 def insert_green_red_pair(cube):
     """
     Try to insert the normalized Green-Red F2L pair into the FR slot.
@@ -941,12 +1013,13 @@ def insert_green_red_pair(cube):
 
     CFOP approach:
         1. Detect the current Green-Red F2L case.
-        2. Check the known F2L case table.
-        3. If found, apply the algorithm.
-        4. If not found, try U-layer alignment once.
+        2. Check the known F2L case table directly.
+        3. If not found, try U-layer setup moves and check again.
+        4. If still not found, try the older alignment helper.
         5. If still not found, stop safely.
 
-    This prevents applying the wrong algorithm to the wrong orientation.
+    This prevents applying the wrong algorithm to the wrong orientation
+    while allowing standard CFOP-style U / U2 / U' setup moves.
     """
     pair_case = get_f2l_pair_case(cube, "Green-Red")
 
@@ -976,6 +1049,14 @@ def insert_green_red_pair(cube):
         pair_case["corner_in_top"] is True
         and pair_case["edge_in_top"] is True
     ):
+        u_rotation_case_moves = apply_known_green_red_f2l_case_with_u_rotations(
+            cube,
+        )
+
+        if u_rotation_case_moves:
+            total_moves.extend(u_rotation_case_moves)
+            return total_moves
+
         align_moves = align_green_red_top_pair_for_insertion(cube)
 
         if align_moves:
